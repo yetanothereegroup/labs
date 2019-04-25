@@ -1,5 +1,6 @@
 /*
  * Daniel Ma <dma012@ucr.edu>
+ * Ken Shao <kshao006@ucr.edu>
  *
  * Lab section: 023
  * Assignment: dma012_kshao006_lab7_part1
@@ -7,10 +8,11 @@
  *
  * I acknowledge all content created herein, excluding template or example code, 
  *  is my own original work.
- * Created: 4/24/2019 20:34:40
+ * Created: 4/24/2019 23:09:23
  *
  * Author : Daniel Ma <dma012@ucr.edu>
- */ 
+ *          Ken Shao <kshao006@ucr.edu>
+ */
 
 #include <avr/io.h>
 #include <avr/interrupt.h>

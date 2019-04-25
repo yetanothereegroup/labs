@@ -1,5 +1,6 @@
 /*
  * Daniel Ma <dma012@ucr.edu>
+ * Ken Shao <kshao006@ucr.edu>
  *
  * Lab section: 023
  * Assignment: dma012_kshao006_lab7_part2
@@ -10,6 +11,7 @@
  * Created: 4/24/2019 23:09:23
  *
  * Author : Daniel Ma <dma012@ucr.edu>
+ *          Ken Shao <kshao006@ucr.edu>
  */ 
 
 #include <avr/io.h>
@@ -167,9 +169,11 @@ void tick(uint8_t button_down, uint8_t *output) {
         break;
         
         case S_WAIT_DOWN:
-        LCD_Cursor(2);
-        LCD_WriteData(score + '0');
-        LCD_Cursor(0);
+        if (score < 9) {
+            LCD_Cursor(2);
+            LCD_WriteData(score + '0');
+            LCD_Cursor(0);
+        }        
         break;
         
         case S_WAIT:
@@ -184,7 +188,7 @@ void tick(uint8_t button_down, uint8_t *output) {
         break;
         
         case S_VICTORY:
-        LCD_DisplayString(1, "You are Winner!!");
+        LCD_DisplayString(1, "You Win!!");
         LCD_Cursor(0);
         
         default:
