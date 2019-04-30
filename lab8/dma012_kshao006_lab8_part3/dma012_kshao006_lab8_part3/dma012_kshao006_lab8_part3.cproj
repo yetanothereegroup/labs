@@ -12,9 +12,9 @@
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>dma012_kshao006_lab8_part1</AssemblyName>
-    <Name>dma012_kshao006_lab8_part1</Name>
-    <RootNamespace>dma012_kshao006_lab8_part1</RootNamespace>
+    <AssemblyName>dma012_kshao006_lab8_part3</AssemblyName>
+    <Name>dma012_kshao006_lab8_part3</Name>
+    <RootNamespace>dma012_kshao006_lab8_part3</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
@@ -144,7 +144,7 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="dma012_kshao006_lab8_part1.c">
+    <Compile Include="dma012_kshao006_lab8_part3.c">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>

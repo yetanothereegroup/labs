@@ -3,7 +3,7 @@
  * Ken Shao <kshao006@ucr.edu>
  *
  * Lab section: 023
- * Assignment: dma012_kshao006_lab8_part1
+ * Assignment: dma012_kshao006_lab8_part3
  * Exercise description: 
  *
  * I acknowledge all content created herein, excluding template or example code, 
@@ -15,7 +15,7 @@
 
 #include <avr/io.h>
 
-#define PHOTO_MAX 0x001F;  // Max when exposed to light.
+#define PHOTO_MAX 0x001F  // Max when exposed to light.
 
 // 0 for input, 1 for output
 #define INITIALISE_PORT(port, mode) { \
@@ -40,18 +40,15 @@ int main(void) {
     ADC_init();
     
     uint16_t buf_adc;
-    uint8_t buf_b;
-    uint8_t buf_d;
+    /*uint8_t buf_b;
+    uint8_t buf_d;*/
     
     INITIALISE_PORT(B, 0xFF);
     INITIALISE_PORT(D, 0xFF);
     while (1) {
         buf_adc = ADC;
-        buf_b = (uint8_t)buf_adc;
-        buf_d = (uint8_t)(buf_adc >> 8);
-        
-        PORTB = buf_b;
-        PORTD = buf_d;
+        if (buf_adc < PHOTO_MAX/2) PORTB = 0x00;
+        else PORTB = 0xFF;
         
     }
 }
