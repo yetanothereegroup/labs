@@ -65,8 +65,37 @@ void PWM_off() {
 
 
 int main(void) {
+    INITIALISE_PORT(A, 0x00);
+    INITIALISE_PORT(B, 0xFF);
+    
+    uint8_t a_buf = 0, last_pwm = 0;
+    
     
     while (1) {
+        a_buf = (~PINA) & 0x07;
+        
+        switch (a_buf) {
+            case 0x01:
+            if(!last_pwm) {PWM_on(); last_pwm = 1;}
+            set_PWM(2*261.63); // C4
+            
+            
+            break;
+            case 0x02:
+            if(!last_pwm) {PWM_on(); last_pwm = 1;}
+            set_PWM(2*293.66);
+            
+            break;
+            case 0x04:
+            if(!last_pwm) {PWM_on(); last_pwm = 1;}
+            set_PWM(2*329.63);
+            
+            break;
+            default:
+            if (last_pwm) {PWM_off(); last_pwm = 0;}
+            
+            
+        }
     }
 }
 
