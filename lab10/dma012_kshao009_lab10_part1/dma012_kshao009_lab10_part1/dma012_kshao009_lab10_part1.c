@@ -13,6 +13,8 @@
  */ 
 
 #include <avr/io.h>
+#include <avr/sleep.h>
+#include <stdlib.h>
 #include "common.h"
 
 // 0 for input, 1 for output
@@ -22,11 +24,137 @@
 
 // bit 0 for the lsb, bit 7 for the msb
 #define GET_BIT(val, bit) ((val >> bit) & 0x01)
-#define SET_BIT(var, bit, val) { if (val) var |= 0x01 << bit; else var &= ~(0x01 << bit); }
+
+#define SET_BIT(var, bit, val) { \
+    if (val) var |= 0x01 << bit; else var &= ~(0x01 << bit); \
+}
+
+typedef struct _task {
+    uint8_t state;
+    // Period, in ms
+    uint32_t period;
+    uint32_t elapsed_time;
+    uint32_t (*tick)(uint32_t);
+} task;
+
+#define TASK_SIZE 3
+task task_list[TASK_SIZE];
+
+
+enum _state_TLED {S_TLED_1, S_TLED_2, S_TLED_3};
+enum _state_BLINK {S_BLINK_ON, S_BLINK_OFF};
+    
+uint8_t B0, B1, B2, B3;
+    
+uint32_t tick_TLED (uint32_t state) {
+    // Handle state transitions
+    switch (state) {
+        case S_TLED_1:
+        state = S_TLED_2;
+        break;
+        case S_TLED_2:
+        state = S_TLED_3;
+        break;
+        case S_TLED_3:
+        state = S_TLED_1;
+        break;
+        default:
+        state = S_TLED_1;
+        break;
+    }
+    switch(state) {
+        case S_TLED_1:
+        B0 = 1;
+        B1 = B2 = 0;
+        break;
+        case S_TLED_2:
+        B1 = 1;
+        B0 = B2 = 0;
+        break;
+        case S_TLED_3:
+        B2 = 1;
+        B0 = B1 = 0;
+        break;
+    }
+    return state;
+}
+
+uint32_t tick_BLINK (uint32_t state) {
+    switch(state) {
+        case S_BLINK_ON:
+        state = S_BLINK_OFF;
+        break;
+        case S_BLINK_OFF:
+        state = S_BLINK_ON;
+        break;
+        default:
+        state = S_BLINK_ON;
+        break;
+    }
+    
+    switch(state) {
+        case S_BLINK_ON:
+        B3 = 1;
+        break;
+        case S_BLINK_OFF:
+        B3 = 0;
+        break;
+    }
+    return state;
+}
+
+uint32_t tick_OUTPUT(uint32_t unused) {
+    uint8_t b_buf = 0;
+    SET_BIT(b_buf, 0, B0);
+    SET_BIT(b_buf, 1, B1);
+    SET_BIT(b_buf, 2, B2);
+    SET_BIT(b_buf, 3, B3);
+    
+    PORTB = b_buf;
+    
+    return 0;
+    
+}
+
+void timer_ISR() {
+    for (uint32_t i = 0; i < TASK_SIZE; i++) {
+        task_list[i].elapsed_time++;
+        if (task_list[i].elapsed_time >= task_list[i].period) {
+            task_list[i].elapsed_time = 0;
+            uint32_t tmp = (*task_list[i].tick)(task_list[i].state);
+            task_list[i].state = tmp;
+            
+        }
+    }
+}
 
 int main(void) {
+    INITIALISE_PORT(B, 0xFF);
+    // TLED
+    task_list[0].elapsed_time = 0;
+    task_list[0].period = 500;
+    task_list[0].state = S_TLED_1;
+    task_list[0].tick = &tick_TLED;
+    
+    task_list[1].elapsed_time = 0;
+    task_list[1].period = 500;
+    task_list[1].state = S_BLINK_ON;
+    task_list[1].tick = &tick_BLINK;
+    
+    task_list[2].elapsed_time = 0;
+    task_list[2].period = 2;
+    task_list[2].state = 0;
+    task_list[2].tick = &tick_OUTPUT;
+    
+    
+    timer_init();
+    timer_set(1);
+    
     
     while (1) {
+        sleep_enable();
+        sleep_cpu();
+        sleep_disable();
     }
 }
 

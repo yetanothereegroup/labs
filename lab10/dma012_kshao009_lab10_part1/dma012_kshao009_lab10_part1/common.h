@@ -35,11 +35,8 @@ void timer_off() {
     TCCR1B = 0x00; 
 }
 
-void timer_ISR() {
-    TimerFlag = 1;
-}
+void timer_ISR(); // User defines this
 
-// In our approach, the C programmer does not touch this ISR, but rather TimerISR()
 ISR(TIMER1_COMPA_vect) {
     // CPU automatically calls when TCNT1 == OCR1 (every 1 ms per TimerOn settings)
     avr_timer_current--; // Count down to 0 rather than up to TOP
