@@ -132,12 +132,12 @@ int main(void) {
     INITIALISE_PORT(B, 0xFF);
     // TLED
     task_list[0].elapsed_time = 0;
-    task_list[0].period = 500;
+    task_list[0].period = 1000;
     task_list[0].state = S_TLED_1;
     task_list[0].tick = &tick_TLED;
     
     task_list[1].elapsed_time = 0;
-    task_list[1].period = 500;
+    task_list[1].period = 1000;
     task_list[1].state = S_BLINK_ON;
     task_list[1].tick = &tick_BLINK;
     
