@@ -112,6 +112,8 @@ uint32_t tick_OUTPUT(uint32_t unused) {
     SET_BIT(b_buf, 3, B3);
     SET_BIT(b_buf, 4, B4);
     
+    
+    
     PORTB = b_buf;
     
     return 0;
@@ -134,7 +136,7 @@ uint32_t tick_BUZZER(uint32_t state) {
     
     switch(state) {
         case S_B4_ON:
-        B4 = 1;
+        if (GET_BIT(PINA, 2) == 0) B4 = 1;
         break;
         case S_B4_OFF:
         B4 = 0;
@@ -158,6 +160,7 @@ void timer_ISR() {
 
 int main(void) {
     INITIALISE_PORT(B, 0xFF);
+    INITIALISE_PORT(A, 0x00);
     // TLED
     task_list[0].elapsed_time = 0;
     task_list[0].period = 300;
