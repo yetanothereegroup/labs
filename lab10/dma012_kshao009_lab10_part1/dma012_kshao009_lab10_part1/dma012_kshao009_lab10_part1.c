@@ -37,14 +37,15 @@ typedef struct _task {
     uint32_t (*tick)(uint32_t);
 } task;
 
-#define TASK_SIZE 3
+#define TASK_SIZE 4
 task task_list[TASK_SIZE];
 
 
 enum _state_TLED {S_TLED_1, S_TLED_2, S_TLED_3};
 enum _state_BLINK {S_BLINK_ON, S_BLINK_OFF};
+enum _state_BUZZER {S_B4_ON, S_B4_OFF};
     
-uint8_t B0, B1, B2, B3;
+uint8_t B0, B1, B2, B3, B4;
     
 uint32_t tick_TLED (uint32_t state) {
     // Handle state transitions
@@ -109,11 +110,38 @@ uint32_t tick_OUTPUT(uint32_t unused) {
     SET_BIT(b_buf, 1, B1);
     SET_BIT(b_buf, 2, B2);
     SET_BIT(b_buf, 3, B3);
+    SET_BIT(b_buf, 4, B4);
     
     PORTB = b_buf;
     
     return 0;
     
+}
+
+uint32_t tick_BUZZER(uint32_t state) {
+    switch(state) {
+        case S_B4_ON:
+        state = S_B4_OFF;
+        break;
+        case S_B4_OFF:
+        state = S_B4_ON;
+        break;
+        
+        default:
+        state = S_B4_ON;
+        break;
+    }
+    
+    switch(state) {
+        case S_B4_ON:
+        B4 = 1;
+        break;
+        case S_B4_OFF:
+        B4 = 0;
+        break;
+    }
+    
+    return state;
 }
 
 void timer_ISR() {
@@ -145,6 +173,11 @@ int main(void) {
     task_list[2].period = 2;
     task_list[2].state = 0;
     task_list[2].tick = &tick_OUTPUT;
+    
+    task_list[3].elapsed_time = 0;
+    task_list[3].period = 2;
+    task_list[3].state = S_B4_ON;
+    task_list[3].tick = &tick_BUZZER;
     
     
     timer_init();
