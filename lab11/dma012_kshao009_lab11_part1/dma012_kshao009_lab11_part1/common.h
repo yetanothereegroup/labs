@@ -9,8 +9,19 @@
 #ifndef COMMON_H_
 #define COMMON_H_
 
+
 #include <avr/io.h>
 #include <avr/interrupt.h>
+
+
+// 0 for input, 1 for output
+#define INITIALISE_PORT(port, mode) { \
+    DDR##port = (uint8_t)mode; PORT##port = (uint8_t)(~mode); \
+}
+
+// bit 0 for the lsb, bit 7 for the msb
+#define GET_BIT(val, bit) ((val >> bit) & 0x01)
+#define SET_BIT(var, bit, val) { if (val) var |= 0x01 << bit; else var &= ~(0x01 << bit); }
 
 // Timer
 
@@ -92,6 +103,11 @@ void PWM_off() {
     TCCR3A = 0x00;
     TCCR3B = 0x00;
 }
+
+//////////////////////////
+//  Keypad              //
+//////////////////////////
+
 
 
 
